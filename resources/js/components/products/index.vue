@@ -1,13 +1,37 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import {useRouter} from "vue-router";
+import router from "@/router/index.js";
 
+// declare a ref to hold the element reference
+// the name must match template ref value
+//const input = ref(null)
+
+let products = ref([])
+
+onMounted(async () => {
+    getProducts()
+})
+
+const addProduct = () => {router.push('/productCreate')}
+
+const getProducts = async () => {
+    let response = await axios.get("/api/get_products")
+    products.value = response.data.products
+    console.log('products', products.value)
+}
+
+const ourImage = (img) =>{
+    return "/upload/"+img
+}
 </script>
 
 <template>
     <div class="container">
         <div class="titlebar">
             <h1>Products</h1>
-            <button>Add Product</button>
-        </div>
+            <button class="add-btn" @click="addProduct">Add Product</button>
+                </div>
         <div class="table">
             <div class="table-filter">
                 <div>
@@ -38,11 +62,12 @@
                 <p>Inventory</p>
                 <p>Actions</p>
             </div>
-            <div class="table-product-body">
-                <img src="1.jpg"/>
-                <p> Product name</p>
-                <p>Category</p>
-                <p>Inventory</p>
+
+            <div class="table-product-body" v-for="product in products" :key="product.id" v-if="products.length > 0">
+                <img class="products_image" :src="ourImage(product.image)" style="height: 40px;" v-if="product.image"/>
+                <p> {{product.name}}</p>
+                <p>{{product.category}}</p>
+                <p>{{product.quantity}}</p>
                 <div>
                     <button class="btn btn-success" >
                         <i class="fas fa-pencil-alt" ></i>
@@ -51,6 +76,9 @@
                         <i class="far fa-trash-alt"></i>
                     </button>
                 </div>
+            </div>
+            <div class="table-product-body" v-else>
+                <p>Product not Found</p>
             </div>
             <div class="table-paginate">
                 <div class="pagination">
