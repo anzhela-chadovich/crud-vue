@@ -11,8 +11,9 @@ const routes = [
         component: productIndex
     },
     {
-        path:'/productEdit',
-        component: productEdit
+        path:'/productEdit/:id',
+        component: productEdit,
+        props:true
     },
     {
         path: '/productCreate',

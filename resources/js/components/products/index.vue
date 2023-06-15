@@ -14,11 +14,33 @@ onMounted(async () => {
 })
 
 const addProduct = () => {router.push('/productCreate')}
+const editProduct =(id) => {router.push('/productEdit/'+id)}
 
 const getProducts = async () => {
     let response = await axios.get("/api/get_products")
     products.value = response.data.products
     console.log('products', products.value)
+}
+
+const deleteProduct = (id) => {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Yes'
+    }).then((result) => {
+        if (result.value) {
+            axios.get('/api/delete_product/'+id)
+                .then(()=>{
+                    getProducts()
+                })
+                .catch(()=>{
+
+                })
+        }
+    })
 }
 
 const ourImage = (img) =>{
@@ -69,10 +91,10 @@ const ourImage = (img) =>{
                 <p>{{product.category}}</p>
                 <p>{{product.quantity}}</p>
                 <div>
-                    <button class="btn btn-success" >
+                    <button class="btn btn-success" @click="editProduct(product.id)">
                         <i class="fas fa-pencil-alt" ></i>
                     </button>
-                    <button class="btn btn-danger" >
+                    <button class="btn btn-danger" @click="deleteProduct(product.id)">
                         <i class="far fa-trash-alt"></i>
                     </button>
                 </div>

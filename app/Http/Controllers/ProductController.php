@@ -43,4 +43,50 @@ class ProductController extends Controller
 
         $product->save();
     }
+
+    public function get_edit_product($id){
+        $product = Product::findOrFail($id);
+        return response()->json([
+            'product' => $product
+        ],200);
+    }
+
+    public function update_product(Request $request, $id){
+        $product = Product::findOrFail($id);
+
+        if ($product->image!=$request->image) {
+            $strpos = strpos($request->image, ';');
+            $sub = substr($request->image,0,$strpos);
+            $ex = explode('/',$sub)[1];
+            $name = time().".".$ex;
+            $img = Image::make($request->image)->resize(200,200);
+            $upload_path = public_path()."/upload/";
+            $image = $upload_path.$product->image;
+            $img->save($upload_path.$name);
+            if(file_exists($image)){
+                @unlink($image);
+            }
+        }else{
+            $name = $product->image;
+        }
+
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->image = $name;
+        $product->category = $request->category;
+        $product->quantity = $request->quantity;
+        $product->price = $request->price;
+
+        $product->save();
+    }
+
+    public function delete_product($id){
+        $product = Product::findOrFail($id);
+        $image_path = public_path()."/upload/";
+        $image = $image_path. $product->image;
+        if(file_exists($image)){
+            @unlink($image);
+        }
+        $product->delete();
+    }
 }
