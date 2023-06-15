@@ -3,6 +3,7 @@ import {createRouter, createWebHistory} from "vue-router";
 import productIndex from '../components/products/index.vue'
 import productEdit from '../components/products/edit.vue'
 import productCreate from '../components/products/create.vue'
+import notFound from "../components/products/notFound.vue";
 
 const routes = [
     {
@@ -16,6 +17,10 @@ const routes = [
     {
         path: '/productCreate',
         component: productCreate
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        component: notFound
     }
 ]
 

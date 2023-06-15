@@ -1,6 +1,5 @@
 <script setup>
 import {ref} from "vue";
-//import router from "@/router/index.js";
 
 import router from "@/router/index.js";
 
@@ -47,7 +46,7 @@ const saveProduct = () => {
     formData.append('price',form.value.price)
     formData.append('image',form.value.image)
 
-    axios.post("/api/add_product/",formData)
+    axios.post("/api/add_product",formData)
         .then(async function (response) {
                 form.value.name='',
                 form.value.description='',
