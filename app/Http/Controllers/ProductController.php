@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 use Intervention\Image\Facades\Image;
 
 
@@ -45,7 +46,7 @@ class ProductController extends Controller
     }
 
     public function get_edit_product($id){
-        $product = Product::findOrFail($id);
+        $product = Product::find($id);
         return response()->json([
             'product' => $product
         ],200);
@@ -88,5 +89,18 @@ class ProductController extends Controller
             @unlink($image);
         }
         $product->delete();
+    }
+
+    public function search_products(Request $request) {
+        $search = $request->get('search');
+        if($search!=null) {
+            $products = DB::table('products')->where('name', 'LIKE', "%$search%")
+                ->orWhere('category','LIKE',"%$search%")->get();
+            return response()->json([
+                'products' => $products
+            ],200);
+        }else{
+           return $this->get_products();
+        }
     }
 }

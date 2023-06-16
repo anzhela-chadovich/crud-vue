@@ -8,6 +8,7 @@ import router from "@/router/index.js";
 //const input = ref(null)
 
 let products = ref([])
+let searchProduct = ref([])
 
 onMounted(async () => {
     getProducts()
@@ -16,8 +17,15 @@ onMounted(async () => {
 const addProduct = () => {router.push('/productCreate')}
 const editProduct =(id) => {router.push('/productEdit/'+id)}
 
+
 const getProducts = async () => {
     let response = await axios.get("/api/get_products")
+    products.value = response.data.products
+    console.log('products', products.value)
+}
+
+const search = async () => {
+    let response = await axios.get('/api/search_products?search='+searchProduct.value)
     products.value = response.data.products
     console.log('products', products.value)
 }
@@ -46,6 +54,7 @@ const deleteProduct = (id) => {
 const ourImage = (img) =>{
     return "/upload/"+img
 }
+
 </script>
 
 <template>
@@ -64,17 +73,10 @@ const ourImage = (img) =>{
                     </ul>
                 </div>
             </div>
-            <div class="table-search">
-                <div>
-                    <button class="search-select">
-                        Search Product
-                    </button>
-                    <span class="search-select-arrow">
-                            <i class="fas fa-caret-down"></i>
-                        </span>
-                </div>
+            <div>
                 <div class="relative">
-                    <input class="search-input" type="text" name="search" placeholder="Search product..." >
+                    <input class="search-input"  type="text" name="search" placeholder="Search product..."
+                    v-model="searchProduct" @keyup="search()">
                 </div>
             </div>
             <div class="table-product-head">
@@ -85,7 +87,7 @@ const ourImage = (img) =>{
                 <p>Actions</p>
             </div>
 
-            <div class="table-product-body" v-for="product in products" :key="product.id" v-if="products.length > 0">
+            <div class="table-product-body" v-for="product in products" :key="product.id" >
                 <img class="products_image" :src="ourImage(product.image)" style="height: 40px;" v-if="product.image"/>
                 <p> {{product.name}}</p>
                 <p>{{product.category}}</p>
@@ -99,8 +101,8 @@ const ourImage = (img) =>{
                     </button>
                 </div>
             </div>
-            <div class="table-product-body" v-else>
-                <p>Product not Found</p>
+            <div class="table-product-body">
+
             </div>
             <div class="table-paginate">
                 <div class="pagination">
