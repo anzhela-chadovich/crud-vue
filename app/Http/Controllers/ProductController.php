@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
@@ -15,10 +19,12 @@ class ProductController extends Controller
         return response()->json([
             'products' => $products
         ],200);
+        //return ProductResource::collection(Product::all());
     }
 
-    public function add_product(Request $request) {
-        $product = new Product();
+    public function add_product(ProductRequest $request)
+    {
+        $product = $request->validated();
 
        // $file_name = time() . '.' . request()->image->getClientOriginalExtension();
        // request()->image->move(public_path('/upload'), $file_name);
@@ -35,12 +41,7 @@ class ProductController extends Controller
             $product->image = "image.png";
         }
 
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->image = $name;
-        $product->category = $request->category;
-        $product->quantity = $request->quantity;
-        $product->price = $request->price;
+
 
         $product->save();
     }
@@ -94,8 +95,7 @@ class ProductController extends Controller
     public function search_products(Request $request) {
         $search = $request->get('search');
         if($search!=null) {
-            $products = DB::table('products')->where('name', 'LIKE', "%$search%")
-                ->orWhere('category','LIKE',"%$search%")->get();
+            $products = Product::search($search)->get();
             return response()->json([
                 'products' => $products
             ],200);

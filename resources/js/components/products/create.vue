@@ -2,6 +2,7 @@
 import {ref} from "vue";
 
 import router from "@/router/index.js";
+import http from "@/services/Http.js";
 
 let form = ref({
     name:'',
@@ -46,7 +47,7 @@ const saveProduct = () => {
     formData.append('price',form.value.price)
     formData.append('image',form.value.image)
 
-    axios.post("/api/add_product",formData)
+        http.create_product(formData)
         .then(async function (response) {
                 form.value.name='',
                 form.value.description='',
@@ -77,9 +78,11 @@ const saveProduct = () => {
             <input type="text" class="input" v-model="form.name">
             <label>Description (optional)</label>
             <textarea cols="10" rows="5" class="textarea" v-model="form.description" ></textarea>
-            <label for="myfile">Add Image</label>
-            <img :src="getImage()" alt="" class="img-product" />
-            <input type="file" id="myfile" @change="updateImage" >
+            <form method="post" enctype="multipart/form-data">
+                <label for="image">Add Image</label>
+                <img :src="getImage()" alt="" class="img-product" />
+                <input type="file" name="image" id="image" @change="updateImage" >
+            </form>
         </div>
         <div>
             <label>Category</label>

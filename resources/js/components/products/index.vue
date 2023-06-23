@@ -2,10 +2,13 @@
 import { ref, onMounted } from 'vue'
 import {useRouter} from "vue-router";
 import router from "@/router/index.js";
+import http from "@/services/Http.js";
 
 // declare a ref to hold the element reference
 // the name must match template ref value
 //const input = ref(null)
+
+// const router = useRouter();
 
 let products = ref([])
 let searchProduct = ref([])
@@ -15,19 +18,21 @@ onMounted(async () => {
 })
 
 const addProduct = () => {router.push('/productCreate')}
+
 const editProduct =(id) => {router.push('/productEdit/'+id)}
 
-
 const getProducts = async () => {
-    let response = await axios.get("/api/get_products")
-    products.value = response.data.products
-    console.log('products', products.value)
+    http.get_all_products().then(response => {
+        products.value = response.data.products
+        console.log('products', products.value)
+    })
 }
 
 const search = async () => {
-    let response = await axios.get('/api/search_products?search='+searchProduct.value)
-    products.value = response.data.products
-    console.log('products', products.value)
+    http.find(searchProduct.value).then(response => {
+        products.value = response.data.products
+        console.log('products', products.value)
+    })
 }
 
 const deleteProduct = (id) => {
@@ -40,7 +45,7 @@ const deleteProduct = (id) => {
         confirmButtonText: 'Yes'
     }).then((result) => {
         if (result.value) {
-            axios.get('/api/delete_product/'+id)
+            http.delete_one_product(id)
                 .then(()=>{
                     getProducts()
                 })
