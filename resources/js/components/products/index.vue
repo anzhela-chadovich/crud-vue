@@ -1,14 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import {useRouter} from "vue-router";
 import router from "@/router/index.js";
 import http from "@/services/Http.js";
-
-// declare a ref to hold the element reference
-// the name must match template ref value
-//const input = ref(null)
-
-// const router = useRouter();
 
 let products = ref([])
 let searchProduct = ref([])
@@ -49,15 +42,9 @@ const deleteProduct = (id) => {
                 .then(()=>{
                     getProducts()
                 })
-                .catch(()=>{
-
-                })
+                .catch(()=>{})
         }
     })
-}
-
-const ourImage = (img) =>{
-    return "/upload/"+img
 }
 
 </script>
@@ -93,7 +80,7 @@ const ourImage = (img) =>{
             </div>
 
             <div class="table-product-body" v-for="product in products" :key="product.id" >
-                <img class="products_image" :src="ourImage(product.image)" style="height: 40px;" v-if="product.image"/>
+                <img class="products_image" :src="'/storage/'+product.image" style="height: 40px;" v-if="product.image"/>
                 <p> {{product.name}}</p>
                 <p>{{product.category}}</p>
                 <p>{{product.quantity}}</p>
@@ -105,9 +92,6 @@ const ourImage = (img) =>{
                         <i class="far fa-trash-alt"></i>
                     </button>
                 </div>
-            </div>
-            <div class="table-product-body">
-
             </div>
             <div class="table-paginate">
                 <div class="pagination">

@@ -3,31 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
-use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Product;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 
 
 class ProductController extends Controller
 {
     public function get_products(){
-        $products = Product::all();
-        return response()->json([
-            'products' => $products
-        ],200);
-        //return ProductResource::collection(Product::all());
+        //$products = Product::all();
+        //return response()->json(['products' => $products],200);
+        return ProductResource::collection(Product::all());
     }
 
     public function add_product(ProductRequest $request)
     {
-        $product = $request->validated();
-
-       // $file_name = time() . '.' . request()->image->getClientOriginalExtension();
-       // request()->image->move(public_path('/upload'), $file_name);
+        $product = new Product();
 
         if ($request->image!="") {
             $strpos = strpos($request->image, ';');
@@ -37,12 +30,17 @@ class ProductController extends Controller
             $img = Image::make($request->image)->resize(200,200);
             $upload_path = public_path()."/upload/";
             $img->save($upload_path.$name);
+            Storage::disk('public') -> put($name, $img);
         }else{
             $product->image = "image.png";
         }
 
-
-
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->image = $name;
+        $product->category = $request->category;
+        $product->quantity = $request->quantity;
+        $product->price = $request->price;
         $product->save();
     }
 
@@ -53,7 +51,7 @@ class ProductController extends Controller
         ],200);
     }
 
-    public function update_product(Request $request, $id){
+    public function update_product(ProductRequest $request, $id){
         $product = Product::findOrFail($id);
 
         if ($product->image!=$request->image) {
@@ -65,8 +63,10 @@ class ProductController extends Controller
             $upload_path = public_path()."/upload/";
             $image = $upload_path.$product->image;
             $img->save($upload_path.$name);
+            Storage::disk('public') -> put($name, $img);
             if(file_exists($image)){
                 @unlink($image);
+                Storage::disk('public')->delete($product->image);
             }
         }else{
             $name = $product->image;
@@ -88,6 +88,7 @@ class ProductController extends Controller
         $image = $image_path. $product->image;
         if(file_exists($image)){
             @unlink($image);
+            Storage::disk('public')->delete($product->image);
         }
         $product->delete();
     }

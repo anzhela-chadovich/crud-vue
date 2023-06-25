@@ -14,12 +14,12 @@ let form = ref({
 })
 
 const getImage = () => {
-    let image = "/upload/image.png"
+    let image = "storage/app/public/image.png"
     if(form.value.image){
         if(form.value.image.indexOf('base64') != -1){
             image = form.value.image
         }else{
-            image='/upload/'+form.value.image
+            image='storage/app/public/'+form.value.image
         }
     }
     return image
@@ -78,7 +78,7 @@ const saveProduct = () => {
             <input type="text" class="input" v-model="form.name">
             <label>Description (optional)</label>
             <textarea cols="10" rows="5" class="textarea" v-model="form.description" ></textarea>
-            <form method="post" enctype="multipart/form-data">
+            <form action="" method="" enctype="multipart/form-data">
                 <label for="image">Add Image</label>
                 <img :src="getImage()" alt="" class="img-product" />
                 <input type="file" name="image" id="image" @change="updateImage" >
