@@ -16,15 +16,13 @@ const editProduct =(id) => {router.push('/productEdit/'+id)}
 
 const getProducts = async () => {
     http.get_all_products().then(response => {
-        products.value = response.data.products
-        console.log('products', products.value)
+        products.value = response.data
     })
 }
 
 const search = async () => {
     http.find(searchProduct.value).then(response => {
-        products.value = response.data.products
-        console.log('products', products.value)
+        products.value = response.data
     })
 }
 

@@ -1,8 +1,14 @@
 <script setup>
 import {ref} from "vue";
+import {useProductStore} from "@/stores/productStore.js";
 
 import router from "@/router/index.js";
 import http from "@/services/Http.js";
+import {storeToRefs} from "pinia";
+
+const store = useProductStore();
+const {products} = storeToRefs(store)
+const {add_product_store} = store
 
 let form = ref({
     name:'',
@@ -14,12 +20,12 @@ let form = ref({
 })
 
 const getImage = () => {
-    let image = "storage/app/public/image.png"
+    let image = '/storage/image.png'
     if(form.value.image){
         if(form.value.image.indexOf('base64') != -1){
             image = form.value.image
         }else{
-            image='storage/app/public/'+form.value.image
+            image='/storage/'+form.value.image
         }
     }
     return image
@@ -70,7 +76,7 @@ const saveProduct = () => {
 <div class="container">
     <div class="titlebar">
         <h1>Add Product</h1>
-        <button v-on:click="saveProduct()">Save</button>
+        <button  v-on:click="saveProduct()">Save</button>
     </div>
     <div class="card">
         <div>

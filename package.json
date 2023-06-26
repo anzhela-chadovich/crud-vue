@@ -16,6 +16,8 @@
         "@vitejs/plugin-vue": "^4.2.3",
         "@vue/compiler-sfc": "^3.3.4",
         "babel-loader": "^9.1.2",
+        "pinia": "^2.1.4",
+        "pinia-plugin-persistedstate": "^3.1.0",
         "sweetalert2": "^11.7.12",
         "vue": "^3.3.4",
         "vue-loader": "^17.2.2",

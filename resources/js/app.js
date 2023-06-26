@@ -16,8 +16,12 @@ window.toast = toast;
 import router from './router/index.js'
 import {createApp} from "vue"
 import App from "./components/App.vue"
+import {createPinia} from "pinia";
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
-createApp(App).use(router).mount("#app")
+const pinia = createPinia();
+
+createApp(App).use(router).use(pinia.use(piniaPluginPersistedstate)).mount("#app")
 
 
 

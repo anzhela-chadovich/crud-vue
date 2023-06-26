@@ -13,8 +13,6 @@ use Intervention\Image\Facades\Image;
 class ProductController extends Controller
 {
     public function get_products(){
-        //$products = Product::all();
-        //return response()->json(['products' => $products],200);
         return ProductResource::collection(Product::all());
     }
 
@@ -28,9 +26,7 @@ class ProductController extends Controller
             $ex = explode('/',$sub)[1];
             $name = time().".".$ex;
             $img = Image::make($request->image)->resize(200,200);
-            $upload_path = public_path()."/upload/";
-            $img->save($upload_path.$name);
-            Storage::disk('public') -> put($name, $img);
+            Storage::disk('public') -> put($name, $img->save($name));
         }else{
             $product->image = "image.png";
         }
@@ -45,10 +41,7 @@ class ProductController extends Controller
     }
 
     public function get_edit_product($id){
-        $product = Product::find($id);
-        return response()->json([
-            'product' => $product
-        ],200);
+        return new ProductResource(Product::find($id));
     }
 
     public function update_product(ProductRequest $request, $id){
@@ -60,17 +53,11 @@ class ProductController extends Controller
             $ex = explode('/',$sub)[1];
             $name = time().".".$ex;
             $img = Image::make($request->image)->resize(200,200);
-            $upload_path = public_path()."/upload/";
-            $image = $upload_path.$product->image;
-            $img->save($upload_path.$name);
-            Storage::disk('public') -> put($name, $img);
-            if(file_exists($image)){
-                @unlink($image);
+            Storage::disk('public') -> put($name, $img->save($name));
+            if(Storage::disk('public')->exists($product->image)){
                 Storage::disk('public')->delete($product->image);
             }
-        }else{
-            $name = $product->image;
-        }
+            }else {$name = $product->image;}
 
         $product->name = $request->name;
         $product->description = $request->description;
@@ -84,22 +71,14 @@ class ProductController extends Controller
 
     public function delete_product($id){
         $product = Product::findOrFail($id);
-        $image_path = public_path()."/upload/";
-        $image = $image_path. $product->image;
-        if(file_exists($image)){
-            @unlink($image);
-            Storage::disk('public')->delete($product->image);
-        }
+        Storage::disk('public')->delete($product->image);
         $product->delete();
     }
 
     public function search_products(Request $request) {
         $search = $request->get('search');
         if($search!=null) {
-            $products = Product::search($search)->get();
-            return response()->json([
-                'products' => $products
-            ],200);
+            return ProductResource::collection(Product::search($search)->get());
         }else{
            return $this->get_products();
         }

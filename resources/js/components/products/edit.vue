@@ -25,16 +25,16 @@ const props = defineProps({
 })
 const getProduct = async () => {
     http.get_editable_product(props.id).then(response => {
-        form.value=response.data.product
+        form.value=response.data
     })}
 
 const getImage = () => {
-    let image = "/upload/image.png"
+    let image = "/storage/image.png"
     if(form.value.image){
         if(form.value.image.indexOf('base64') != -1){
             image = form.value.image
         }else{
-            image='/upload/'+form.value.image
+            image='/storage/'+form.value.image
         }
     }
     return image
